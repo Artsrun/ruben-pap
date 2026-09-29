@@ -57,6 +57,7 @@
     link.href = I18N.langs[param] && param !== 'en' ? `${base}?lang=${param}` : base;
   }
 
+  const langListeners = [];
   function setLang(next, byUser) {
     if (!I18N.langs[next]) return;
     lang = next;
@@ -66,6 +67,7 @@
     syncTheme();
     syncMenuBtn();
     if (lbOpen) show(cur);
+    langListeners.forEach(fn => fn(lang));
     if (byUser) {
       store.set('rp-lang', next);
       const url = new URL(location.href);
@@ -147,7 +149,7 @@
   }
   menuBtn.addEventListener('click', () => setMenu(!menuOpen()));
   nav.addEventListener('click', e => { if (menuOpen() && e.target.closest('a[href^="#"]')) setMenu(false); });
-  const menuMq = matchMedia('(max-width: 1060px)');
+  const menuMq = matchMedia('(max-width: 1180px)');
   const onMenuMq = () => { if (!menuMq.matches && menuOpen()) setMenu(false); };
   if (menuMq.addEventListener) menuMq.addEventListener('change', onMenuMq);
 
@@ -190,15 +192,20 @@
   const icon = id => `<svg class="ic" aria-hidden="true"><use href="#i-${id}"/></svg>`;
   const target = href => (/^https?:/i.test(href) ? ' target="_blank" rel="noopener"' : '');
 
+  // the configured channels among `keys`, with a link builder for a { text, subject } message
+  const channelList = keys => keys.filter(k => CHANNELS[k] && String(CFG[k] || '').trim()).map(k => {
+    const c = CHANNELS[k];
+    const v = String(CFG[k]).trim();
+    return { key: k, c, v, name: c.name(), icon: c.icon, href: msg => c.href(v, msg) };
+  });
+
   // fills a [data-channels] box; keeps the static fallback when nothing is configured
   function renderChannels(box, vars) {
     const set = box.dataset.channels;
     const msg = MESSAGES[set] && MESSAGES[set](vars);
-    const items = SETS[set].filter(k => String(CFG[k] || '').trim()).map(k => {
-      const c = CHANNELS[k];
-      const v = String(CFG[k]).trim();
-      const href = set === 'social' && c.profile ? c.profile(v) : c.href(v, msg);
-      return { c, v, name: c.name(), attrs: `href="${esc(href)}"${target(href)}` };
+    const items = channelList(SETS[set]).map(i => {
+      const href = set === 'social' && i.c.profile ? i.c.profile(i.v) : i.href(msg);
+      return { ...i, attrs: `href="${esc(href)}"${target(href)}` };
     });
     if (!items.length) return 0;
     if (set === 'hello') {
@@ -259,6 +266,7 @@
   const lbAsk = $('.lb-ask', lb);
   const lbAskLinks = $('.lb-ask-links', lb);
   const lbStatus = $('.lb-status', lb);
+  const lb3d = $('.lb-3d', lb);
   const shots = $$('.zoom');
   let cur = 0;
   let lbOpen = false;
@@ -270,7 +278,8 @@
     const work = btn.closest('.work');
     if (!work) return { src: btn.dataset.full, alt: img.alt, title: img.alt };
     const [name, num] = $$('figcaption span', work).map(s => s.textContent);
-    return { src: btn.dataset.full, alt: img.alt, title: `${num} — ${name}`, piece: { name, n: num } };
+    const to3d = $('.to3d', work);
+    return { src: btn.dataset.full, alt: img.alt, title: `${num} — ${name}`, piece: { name, n: num }, pieceId: to3d && to3d.dataset.piece };
   }
   function show(i) {
     cur = (i + shots.length) % shots.length;
@@ -285,6 +294,8 @@
     lbCount.textContent = `${cur + 1} / ${shots.length}`;
     lbStatus.textContent = `${it.title} — ${cur + 1} / ${shots.length}`;
     lbAsk.hidden = !(it.piece && renderChannels(lbAskLinks, it.piece));
+    lb3d.hidden = !(it.pieceId && RP.openConfigurator);
+    lb3d.dataset.piece = it.pieceId || '';
     [cur + 1, cur - 1].forEach(j => { new Image().src = shots[(j + shots.length) % shots.length].dataset.full; });
   }
   const behindLightbox = () => [header, $('main'), $('footer'), $('.skip')];
@@ -315,6 +326,11 @@
   $('.lb-x', lb).addEventListener('click', closeLb);
   $('.lb-pv', lb).addEventListener('click', () => show(cur - 1));
   $('.lb-nx', lb).addEventListener('click', () => show(cur + 1));
+  lb3d.addEventListener('click', () => {
+    const id = lb3d.dataset.piece;
+    closeLb();
+    if (RP.openConfigurator) RP.openConfigurator(id);
+  });
   lb.addEventListener('click', e => { if (e.target === lb || e.target.classList.contains('lb-fig')) closeLb(); });
 
   let touchX = null;
@@ -378,6 +394,45 @@
   }
 
   $$('[data-year]').forEach(el => { el.textContent = new Date().getFullYear(); });
+
+  /* ================= toast + clipboard ================= */
+  const toastEl = document.createElement('div');
+  toastEl.className = 'toast';
+  toastEl.setAttribute('role', 'status');
+  toastEl.setAttribute('aria-live', 'polite');
+  document.body.append(toastEl);
+  let toastTimer = 0;
+  function toast(text) {
+    toastEl.textContent = text;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove('show'), 3200);
+  }
+  async function copy(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch (e) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
+      document.body.append(ta);
+      ta.select();
+      let ok = false;
+      try { ok = document.execCommand('copy'); } catch (err) { /* not allowed */ }
+      ta.remove();
+      return ok;
+    }
+  }
+
+  /* small API for configurator.js */
+  const RP = window.RP = {
+    t, esc, icon, toast, copy, fabAway,
+    get lang() { return lang; },
+    onLang: fn => langListeners.push(fn),
+    channels: keys => channelList(keys).map(({ key, name, icon: ic, href }) => ({ key, name, icon: ic, href }))
+  };
 
   /* ================= start ================= */
   setLang(lang, false);

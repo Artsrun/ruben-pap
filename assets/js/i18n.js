@@ -273,6 +273,103 @@ window.I18N = {
     },
     'msg.subjectHello': { en: 'Hello from the website', hy: 'Նամակ կայքից', ru: 'Сообщение с сайта', de: 'Nachricht über die Website' },
     'msg.subjectVisit': { en: 'Studio visit', hy: 'Այց արվեստանոց', ru: 'Визит в студию', de: 'Atelierbesuch' },
-    'msg.subjectPiece': { en: 'About “{name}” (No. {n})', hy: '«{name}» (№ {n}) աշխատանքի մասին', ru: 'О работе «{name}» (№ {n})', de: 'Zu „{name}“ (Nr. {n})' }
+    'msg.subjectPiece': { en: 'About “{name}” (No. {n})', hy: '«{name}» (№ {n}) աշխատանքի մասին', ru: 'О работе «{name}» (№ {n})', de: 'Zu „{name}“ (Nr. {n})' },
+
+    /* ---------- 3D configurator ---------- */
+    'nav.customize': { en: 'Customize', hy: 'Ձևավորել', ru: 'Конструктор', de: 'Gestalten' },
+    'cfg.label': { en: '3D configurator', hy: '3D կոնֆիգուրատոր', ru: '3D-конструктор', de: '3D-Konfigurator' },
+    'cfg.title': { /* html */
+      en: 'Make it <em>yours</em>',
+      hy: 'Ստեղծեք <em>ձերը</em>',
+      ru: 'Сделайте <em>по-своему</em>',
+      de: 'Ganz nach <em>Ihrem</em> Geschmack'
+    },
+    'cfg.text': {
+      en: 'Turn each piece in 3D, compare three sizes and try other glazes. Your choices become a ready-to-send message.',
+      hy: 'Պտտեք յուրաքանչյուր աշխատանքը 3D-ում, համեմատեք երեք չափսերը և փորձեք այլ ջնարակներ։ Ձեր ընտրությունը կդառնա ուղարկելու պատրաստ հաղորդագրություն։',
+      ru: 'Вращайте изделие в 3D, сравнивайте три размера и примеряйте другие глазури. Ваш выбор превратится в готовое к отправке сообщение.',
+      de: 'Drehen Sie jedes Stück in 3D, vergleichen Sie drei Größen und probieren Sie andere Glasuren. Ihre Auswahl wird zu einer versandfertigen Nachricht.'
+    },
+    'cfg.piece': { en: 'Piece', hy: 'Աշխատանք', ru: 'Изделие', de: 'Stück' },
+    'cfg.no': { en: 'No. {n}', hy: '№ {n}', ru: '№ {n}', de: 'Nr. {n}' },
+    'cfg.price': { en: 'Price on request', hy: 'Գինը՝ ըստ հարցման', ru: 'Цена по запросу', de: 'Preis auf Anfrage' },
+    'cfg.unique': { en: 'Handmade in Yerevan · every piece is one of a kind', hy: 'Ձեռագործ՝ Երևանում · յուրաքանչյուր իր եզակի է', ru: 'Ручная работа, Ереван · каждое изделие уникально', de: 'Handgemacht in Jerewan · jedes Stück ein Unikat' },
+    'cfg.size': { en: 'Size', hy: 'Չափս', ru: 'Размер', de: 'Größe' },
+    'cfg.size.s': { en: 'Small', hy: 'Փոքր', ru: 'Маленький', de: 'Klein' },
+    'cfg.size.m': { en: 'Medium', hy: 'Միջին', ru: 'Средний', de: 'Mittel' },
+    'cfg.size.l': { en: 'Large', hy: 'Մեծ', ru: 'Большой', de: 'Groß' },
+    'cfg.glaze': { en: 'Glaze', hy: 'Ջնարակ', ru: 'Глазурь', de: 'Glasur' },
+    'cfg.g.bronze': { en: 'Bronze', hy: 'Բրոնզ', ru: 'Бронза', de: 'Bronze' },
+    'cfg.g.graphite': { en: 'Graphite', hy: 'Գրաֆիտ', ru: 'Графит', de: 'Graphit' },
+    'cfg.g.turquoise': { en: 'Deep turquoise', hy: 'Խոր փիրուզագույն', ru: 'Глубокая бирюза', de: 'Tiefes Türkis' },
+    'cfg.g.clay': { en: 'Natural clay', hy: 'Բնական կավ', ru: 'Натуральная глина', de: 'Naturton' },
+    'cfg.g.ivory': { en: 'Ivory', hy: 'Փղոսկր', ru: 'Слоновая кость', de: 'Elfenbein' },
+    'cfg.surface': { en: 'Surface', hy: 'Մակերես', ru: 'Поверхность', de: 'Oberfläche' },
+    'cfg.flow': { en: 'Glaze flow', hy: 'Ջնարակի հոսք', ru: 'Потёки глазури', de: 'Glasurfluss' },
+    'cfg.tex': { en: 'Texture', hy: 'Ֆակտուրա', ru: 'Фактура', de: 'Struktur' },
+    'cfg.luster': { en: 'Sheen', hy: 'Փայլ', ru: 'Блеск', de: 'Glanz' },
+    'cfg.qty': { en: 'Quantity', hy: 'Քանակ', ru: 'Количество', de: 'Anzahl' },
+    'cfg.qtyDec': { en: 'Decrease quantity', hy: 'Պակասեցնել քանակը', ru: 'Уменьшить количество', de: 'Anzahl verringern' },
+    'cfg.qtyInc': { en: 'Increase quantity', hy: 'Ավելացնել քանակը', ru: 'Увеличить количество', de: 'Anzahl erhöhen' },
+    'cfg.name': { en: 'Your name', hy: 'Ձեր անունը', ru: 'Ваше имя', de: 'Ihr Name' },
+    'cfg.note': { en: 'Note', hy: 'Նշում', ru: 'Комментарий', de: 'Anmerkung' },
+    'cfg.optional': { en: 'optional', hy: 'ըստ ցանկության', ru: 'необязательно', de: 'optional' },
+    'cfg.notePh': { en: 'e.g. a gift, a preferred date…', hy: 'օրինակ՝ նվեր, նախընտրելի ամսաթիվ…', ru: 'например, подарок, желаемая дата…', de: 'z. B. ein Geschenk, Wunschtermin …' },
+    'cfg.msg': { en: 'Your message', hy: 'Ձեր հաղորդագրությունը', ru: 'Ваше сообщение', de: 'Ihre Nachricht' },
+    'cfg.send': { en: 'Send via', hy: 'Ուղարկել', ru: 'Отправить через', de: 'Senden über' },
+    'cfg.copy': { en: 'Copy message', hy: 'Պատճենել հաղորդագրությունը', ru: 'Скопировать сообщение', de: 'Nachricht kopieren' },
+    'cfg.copyLink': { en: 'Copy link to this design', hy: 'Պատճենել այս տարբերակի հղումը', ru: 'Скопировать ссылку на вариант', de: 'Link zu diesem Entwurf kopieren' },
+    'cfg.copied': { en: 'Message copied.', hy: 'Հաղորդագրությունը պատճենված է։', ru: 'Сообщение скопировано.', de: 'Nachricht kopiert.' },
+    'cfg.linkCopied': { en: 'Link copied.', hy: 'Հղումը պատճենված է։', ru: 'Ссылка скопирована.', de: 'Link kopiert.' },
+    'cfg.copyFail': { en: 'Couldn’t copy — please select the text and copy it.', hy: 'Չհաջողվեց պատճենել․ ընտրեք տեքստը և պատճենեք։', ru: 'Не удалось скопировать — выделите текст и скопируйте вручную.', de: 'Kopieren nicht möglich — bitte Text markieren und kopieren.' },
+    'cfg.pasteHint': { en: 'Message copied — paste it into the chat.', hy: 'Հաղորդագրությունը պատճենված է․ տեղադրեք այն զրույցում։', ru: 'Сообщение скопировано — вставьте его в чат.', de: 'Nachricht kopiert — fügen Sie sie im Chat ein.' },
+    'cfg.approx': {
+      en: 'Sizes are approximate; colours are a digital preview. Every piece is thrown and fired by hand.',
+      hy: 'Չափսերը մոտավոր են, գույները՝ թվային նախադիտում։ Յուրաքանչյուր իր պատրաստվում և թրծվում է ձեռքով։',
+      ru: 'Размеры приблизительные, цвета — цифровое превью. Каждое изделие формуется и обжигается вручную.',
+      de: 'Maße sind Richtwerte, Farben eine digitale Vorschau. Jedes Stück wird von Hand gedreht und gebrannt.'
+    },
+    'cfg.views': { en: 'Views', hy: 'Տեսքեր', ru: 'Ракурсы', de: 'Ansichten' },
+    'cfg.view3d': { en: 'View in 3D', hy: 'Դիտել 3D-ով', ru: 'Смотреть в 3D', de: 'In 3D ansehen' },
+    'cfg.photo': { en: 'Photo {n}', hy: 'Լուսանկար {n}', ru: 'Фото {n}', de: 'Foto {n}' },
+    'cfg.dims': { en: 'Show dimensions', hy: 'Ցույց տալ չափերը', ru: 'Показать размеры', de: 'Maße anzeigen' },
+    'cfg.mug': { en: 'Compare with a mug', hy: 'Համեմատել բաժակի հետ', ru: 'Сравнить с кружкой', de: 'Mit einer Tasse vergleichen' },
+    'cfg.reset': { en: 'Reset view', hy: 'Վերականգնել տեսքը', ru: 'Сбросить вид', de: 'Ansicht zurücksetzen' },
+    'cfg.full': { en: 'Full screen', hy: 'Լիաէկրան', ru: 'Во весь экран', de: 'Vollbild' },
+    'cfg.hint': { en: 'Drag to rotate · scroll or pinch to zoom', hy: 'Քաշեք՝ պտտելու համար · խոշորացրեք անիվով կամ երկու մատով', ru: 'Тяните, чтобы вращать · колесо или щипок — масштаб', de: 'Ziehen zum Drehen · Scrollen oder zwei Finger zum Zoomen' },
+    'cfg.loading': { en: 'Loading 3D…', hy: '3D-ն բեռնվում է…', ru: 'Загрузка 3D…', de: '3D wird geladen …' },
+    'cfg.noWebgl': { en: '3D preview isn’t available on this device — showing photos instead.', hy: '3D նախադիտումը հասանելի չէ այս սարքում․ ցուցադրվում են լուսանկարները։', ru: '3D-просмотр недоступен на этом устройстве — показаны фото.', de: '3D-Vorschau ist auf diesem Gerät nicht verfügbar — stattdessen Fotos.' },
+    'cfg.canvas': { en: '3D preview: {piece}, {size}, {glaze}. Use the arrow keys to rotate.', hy: '3D նախադիտում՝ {piece}, {size}, {glaze}։ Պտտելու համար օգտագործեք սլաքները։', ru: '3D-просмотр: {piece}, {size}, {glaze}. Вращайте стрелками.', de: '3D-Vorschau: {piece}, {size}, {glaze}. Mit den Pfeiltasten drehen.' },
+    'cfg.h': { en: 'H', hy: 'Բ', ru: 'В', de: 'H' },
+    'cfg.w': { en: 'W', hy: 'Լ', ru: 'Ш', de: 'B' },
+    'cfg.cm': { en: 'cm', hy: 'սմ', ru: 'см', de: 'cm' },
+    'cfg.mugLabel': { en: 'Mug · 9.5 cm', hy: 'Բաժակ · 9,5 սմ', ru: 'Кружка · 9,5 см', de: 'Tasse · 9,5 cm' },
+
+    /* ---------- the order message (built by the configurator) ---------- */
+    'cfg.m.intro': {
+      en: 'Hello! I\'d like to order a piece from the Ruben Pap Ceramics website:',
+      hy: 'Բարև Ձեզ։ Կցանկանայի պատվիրել աշխատանք Ruben Pap Ceramics կայքից․',
+      ru: 'Здравствуйте! Хочу заказать изделие с сайта Ruben Pap Ceramics:',
+      de: 'Hallo! Ich möchte ein Stück von der Website von Ruben Pap Ceramics bestellen:'
+    },
+    'cfg.m.piece': { en: '{piece} (No. {n})', hy: '{piece} (№ {n})', ru: '{piece} (№ {n})', de: '{piece} (Nr. {n})' },
+    'cfg.m.size': { en: 'Size: {size} — {dims}', hy: 'Չափս՝ {size} — {dims}', ru: 'Размер: {size} — {dims}', de: 'Größe: {size} — {dims}' },
+    'cfg.m.glaze': {
+      en: 'Glaze: {glaze} (flow {flow}%, texture {tex}%, sheen {luster}%)',
+      hy: 'Ջնարակ՝ {glaze} (հոսք {flow}%, ֆակտուրա {tex}%, փայլ {luster}%)',
+      ru: 'Глазурь: {glaze} (потёки {flow}%, фактура {tex}%, блеск {luster}%)',
+      de: 'Glasur: {glaze} (Fluss {flow} %, Struktur {tex} %, Glanz {luster} %)'
+    },
+    'cfg.m.qty': { en: 'Quantity: {qty}', hy: 'Քանակ՝ {qty}', ru: 'Количество: {qty}', de: 'Anzahl: {qty}' },
+    'cfg.m.note': { en: 'Note: {note}', hy: 'Նշում՝ {note}', ru: 'Комментарий: {note}', de: 'Anmerkung: {note}' },
+    'cfg.m.name': { en: 'My name: {name}', hy: 'Իմ անունը՝ {name}', ru: 'Меня зовут {name}.', de: 'Mein Name: {name}' },
+    'cfg.m.ask': {
+      en: 'Could you tell me the price and when it could be ready?',
+      hy: 'Կասե՞ք գինը և երբ կարող է պատրաստ լինել։',
+      ru: 'Подскажите, пожалуйста, цену и сроки изготовления.',
+      de: 'Können Sie mir den Preis und die Fertigungszeit nennen?'
+    },
+    'cfg.m.link': { en: 'My design: {link}', hy: 'Իմ տարբերակը՝ {link}', ru: 'Мой вариант: {link}', de: 'Mein Entwurf: {link}' },
+    'cfg.m.subject': { en: 'Order request: {piece} ({size})', hy: 'Պատվերի հարցում՝ {piece} ({size})', ru: 'Заказ: {piece} ({size})', de: 'Bestellanfrage: {piece} ({size})' }
   }
 };
