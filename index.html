@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f1e9">
+    <meta name="description" content="Handmade stoneware by Ruben Pap. Explore one-of-a-kind ceramics shaped slowly in the studio.">
+    <title>Ruben Pap — Handmade Ceramics</title>
+    <link rel="preconnect" href="https://images.unsplash.com">
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="wordmark" href="#home" aria-label="Ruben Pap Ceramics home">RUBEN PAP<span> CERAMICS</span></a>
+      <nav aria-label="Main navigation">
+        <a href="#collection">Collection</a>
+        <a href="#about">The studio</a>
+        <a class="nav-contact" href="#contact">Get in touch <span aria-hidden="true">↗</span></a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" id="home" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow">Small-batch ceramics · Made by hand</p>
+          <h1 id="hero-title">Objects made<br>to <em>stay.</em></h1>
+          <p class="hero-intro">Quiet forms, honest materials, and the marks of the making. Each piece is shaped slowly in the studio and made to find its place in your everyday.</p>
+          <a class="button button-dark" href="#collection">Explore the collection <span aria-hidden="true">↓</span></a>
+          <p class="edition-note">01 — 06 <span>Current studio collection</span></p>
+        </div>
+        <div class="hero-image" role="img" aria-label="Handmade ceramic vessels arranged in warm afternoon light">
+          <span class="image-caption">Earth, held in form <span>01 / 06</span></span>
+        </div>
+        <span class="hero-index" aria-hidden="true">RP—01</span>
+      </section>
+
+      <section class="collection section-wrap" id="collection" aria-labelledby="collection-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Made for the everyday</p>
+            <h2 id="collection-title">The collection<span class="period">.</span></h2>
+          </div>
+          <p class="section-note">Each piece is formed and finished by hand. Small variations in shape and glaze make every object its own.</p>
+        </div>
+
+        <div class="catalog-tools">
+          <div class="filters" role="group" aria-label="Filter pieces by type">
+            <button class="filter-button active" type="button" data-filter="all" aria-pressed="true">All pieces</button>
+            <button class="filter-button" type="button" data-filter="vessels" aria-pressed="false">Vessels</button>
+            <button class="filter-button" type="button" data-filter="tableware" aria-pressed="false">Tableware</button>
+            <button class="filter-button" type="button" data-filter="objects" aria-pressed="false">Objects</button>
+          </div>
+          <label class="search-box">
+            <span class="visually-hidden">Search the collection</span>
+            <input id="catalog-search" type="search" placeholder="Find a piece…" autocomplete="off">
+            <span aria-hidden="true">⌕</span>
+          </label>
+        </div>
+
+        <p class="catalog-status" id="catalog-status" aria-live="polite">Showing 6 pieces</p>
+        <div class="product-grid" id="product-grid">
+          <article class="product-card" data-category="vessels" data-name="tide bottle">
+            <a class="product-image image-tide" href="mailto:hello@rubenpap.com?subject=Enquiry%20about%20Tide%20Bottle" aria-label="Enquire about the Tide Bottle">
+              <span class="piece-mark">01</span><span class="image-link" aria-hidden="true">↗</span>
+            </a>
+            <div class="product-info"><div><h3>Tide bottle</h3><p>Stoneware · Salt glaze</p></div><span>€ 85</span></div>
+          </article>
+          <article class="product-card" data-category="tableware" data-name="low bowl">
+            <a class="product-image image-bowl" href="mailto:hello@rubenpap.com?subject=Enquiry%20about%20Low%20Bowl" aria-label="Enquire about the Low Bowl">
+              <span class="piece-mark">02</span><span class="image-link" aria-hidden="true">↗</span>
+            </a>
+            <div class="product-info"><div><h3>Low bowl</h3><p>Stoneware · Iron wash</p></div><span>€ 62</span></div>
+          </article>
+          <article class="product-card" data-category="vessels" data-name="ash vase">
+            <a class="product-image image-ash" href="mailto:hello@rubenpap.com?subject=Enquiry%20about%20Ash%20Vase" aria-label="Enquire about the Ash Vase">
+              <span class="piece-mark">03</span><span class="image-link" aria-hidden="true">↗</span>
+            </a>
+            <div class="product-info"><div><h3>Ash vase</h3><p>Stoneware · Wood ash glaze</p></div><span>€ 110</span></div>
+          </article>
+          <article class="product-card" data-category="tableware" data-name="daily cup">
+            <a class="product-image image-cup" href="mailto:hello@rubenpap.com?subject=Enquiry%20about%20Daily%20Cup" aria-label="Enquire about the Daily Cup">
+              <span class="piece-mark">04</span><span class="image-link" aria-hidden="true">↗</span>
+            </a>
+            <div class="product-info"><div><h3>Daily cup</h3><p>Stoneware · Shino glaze</p></div><span>€ 38</span></div>
+          </article>
+          <article class="product-card" data-category="objects" data-name="shore sculpture">
+            <a class="product-image image-shore" href="mailto:hello@rubenpap.com?subject=Enquiry%20about%20Shore%20Sculpture" aria-label="Enquire about the Shore Sculpture">
+              <span class="piece-mark">05</span><span class="image-link" aria-hidden="true">↗</span>
+            </a>
+            <div class="product-info"><div><h3>Shore sculpture</h3><p>Stoneware · Raw finish</p></div><span>€ 95</span></div>
+          </article>
+          <article class="product-card" data-category="vessels" data-name="open form">
+            <a class="product-image image-open" href="mailto:hello@rubenpap.com?subject=Enquiry%20about%20Open%20Form" aria-label="Enquire about the Open Form">
+              <span class="piece-mark">06</span><span class="image-link" aria-hidden="true">↗</span>
+            </a>
+            <div class="product-info"><div><h3>Open form</h3><p>Stoneware · Celadon glaze</p></div><span>€ 125</span></div>
+          </article>
+        </div>
+        <p class="empty-state" id="empty-state" hidden>No pieces match your search. Try another name or category.</p>
+      </section>
+
+      <section class="studio" id="about" aria-labelledby="studio-title">
+        <div class="studio-image" role="img" aria-label="A sunlit ceramics studio with handmade pots"></div>
+        <div class="studio-copy">
+          <p class="eyebrow">A note from the studio</p>
+          <h2 id="studio-title">Made slowly.<br>Kept close.</h2>
+          <p>Ruben Pap is an independent ceramic practice rooted in the rhythm of making. Working with local clay and a pared-back palette, Ruben creates considered objects that welcome use, age, and touch.</p>
+          <p>No two pieces are exactly alike. Every curve and surface carries a little evidence of the hand that made it.</p>
+          <a class="text-link" href="#contact">A little more about the work <span aria-hidden="true">↗</span></a>
+        </div>
+      </section>
+
+      <section class="contact section-wrap" id="contact" aria-labelledby="contact-title">
+        <div>
+          <p class="eyebrow">For orders, commissions & kind notes</p>
+          <h2 id="contact-title">Let’s make<br><em>something connect.</em></h2>
+        </div>
+        <div class="contact-action">
+          <p>Interested in a piece, a custom order, or stocking the collection? I’d love to hear from you.</p>
+          <a class="button button-light" href="mailto:hello@rubenpap.com">hello@rubenpap.com <span aria-hidden="true">↗</span></a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a class="wordmark" href="#home">RUBEN PAP<span> CERAMICS</span></a>
+      <p>Handmade in the studio, with care.</p>
+      <a href="#home">Back to top ↑</a>
+      <small>© <span id="year">2026</span> Ruben Pap</small>
+    </footer>
+  </body>
+</html>
