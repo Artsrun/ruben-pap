@@ -8,7 +8,7 @@
  */
 window.SITE_CONFIG = {
   whatsapp: "",   // phone number with country code, e.g. "+374 95 688 684"
-  telegram: "",   // username without @ (e.g. "rubenpap") or phone number
+  telegram: "+374 95 688 684",   // username without @ (e.g. "rubenpap") works best; a phone number also works
   viber: "",      // phone number with country code, e.g. "+374 95 688 684"
   instagram: "rubenpap",                                    // username or profile link
   facebook: "https://www.facebook.com/Rubenpap-Ceramics",   // page link (please double-check it opens the right page)
