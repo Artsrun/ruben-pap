@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Page not found — Ruben Pap Ceramics</title>
+<link rel="icon" href="/ruben-pap/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&amp;family=Inter:wght@400;500&amp;family=Noto+Sans+Armenian:wght@400;500&amp;family=Noto+Serif+Armenian:wght@300&amp;display=swap">
+<style>
+:root{--paper:#f2eee7;--ink:#1c1916;--muted:#6b625a;--accent:#2d7c83;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#171513;--ink:#ece6dc;--muted:#a09789;--accent:#5fb3b9;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#171513;--ink:#ece6dc;--muted:#a09789;--accent:#5fb3b9;color-scheme:dark}
+*{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;min-height:100svh;display:grid;place-items:center;padding:40px clamp(16px,4vw,56px);background:var(--paper);color:var(--ink);font:400 15px/1.7 'Inter','Noto Sans Armenian',system-ui,sans-serif;text-align:center}
+.label{font:500 11px/1 'Inter','Noto Sans Armenian',sans-serif;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+h1{font:300 clamp(44px,8vw,96px)/1 'Cormorant Garamond','Noto Serif Armenian',Georgia,serif;margin:22px 0 18px}
+h1 em{font-style:italic;color:var(--accent)}
+p{color:var(--muted);max-width:420px;margin:0 auto}
+a{display:inline-flex;gap:12px;margin-top:34px;padding:16px 28px;border:1px solid var(--ink);color:inherit;text-decoration:none;font:500 11px/1 'Inter','Noto Sans Armenian',sans-serif;letter-spacing:.22em;text-transform:uppercase;transition:background-color .3s,color .3s}
+a:hover{background:var(--ink);color:var(--paper)}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+</style>
+</head>
+<body>
+<main>
+  <p class="label">404 · Ruben Pap Ceramics</p>
+  <h1 id="t">Page <em>not found</em></h1>
+  <p id="p">This page doesn’t exist — but the studio does.</p>
+  <a id="home" href="/ruben-pap/"><span id="b">Back to the homepage</span> <span aria-hidden="true">→</span></a>
+</main>
+<script>
+(function () {
+  var T = {
+    hy: ['Էջը <em>չի գտնվել</em>', 'Այս էջը գոյություն չունի, բայց արվեստանոցը՝ այո։', 'Գլխավոր էջ'],
+    ru: ['Страница <em>не найдена</em>', 'Такой страницы нет — но студия существует.', 'На главную'],
+    de: ['Seite <em>nicht gefunden</em>', 'Diese Seite gibt es nicht — das Atelier aber schon.', 'Zur Startseite']
+  };
+  var h = document.documentElement, l, th;
+  // project site (user.github.io/repo/) or a custom domain at the root
+  var parts = location.pathname.split('/');
+  var base = /\.github\.io$/.test(location.hostname) && parts[1] ? '/' + parts[1] + '/' : '/';
+  try { l = localStorage.getItem('rp-lang'); th = localStorage.getItem('rp-theme'); } catch (e) {}
+  if (!T[l] && l !== 'en') {
+    var n = String(navigator.language || '').slice(0, 2).toLowerCase();
+    l = T[n] ? n : 'en';
+  }
+  if (th === 'dark' || th === 'light') h.setAttribute('data-theme', th);
+  document.getElementById('home').href = base + (T[l] ? '?lang=' + l : '');
+  if (T[l]) {
+    h.lang = l;
+    document.getElementById('t').innerHTML = T[l][0];
+    document.getElementById('p').textContent = T[l][1];
+    document.getElementById('b').textContent = T[l][2];
+  }
+})();
+</script>
+</body>
+</html>
