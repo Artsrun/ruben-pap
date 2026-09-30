@@ -380,6 +380,7 @@ export function createViewer(host, { onReady } = {}) {
   controls.autoRotateSpeed = 1.1;
   controls.minPolarAngle = 0.12;
   controls.maxPolarAngle = 1.48;
+  canvas.style.touchAction = ''; // OrbitControls sets 'none'; CSS lets vertical swipes scroll the page
   controls.addEventListener('start', () => { controls.autoRotate = false; host.classList.add('cfg-touched'); });
 
   const material = makeGlazeMaterial();

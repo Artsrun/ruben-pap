@@ -337,6 +337,7 @@ window.I18N = {
     'cfg.reset': { en: 'Reset view', hy: 'Վերականգնել տեսքը', ru: 'Сбросить вид', de: 'Ansicht zurücksetzen' },
     'cfg.full': { en: 'Full screen', hy: 'Լիաէկրան', ru: 'Во весь экран', de: 'Vollbild' },
     'cfg.hint': { en: 'Drag to rotate · scroll or pinch to zoom', hy: 'Քաշեք՝ պտտելու համար · խոշորացրեք անիվով կամ երկու մատով', ru: 'Тяните, чтобы вращать · колесо или щипок — масштаб', de: 'Ziehen zum Drehen · Scrollen oder zwei Finger zum Zoomen' },
+    'cfg.hintTouch': { en: 'Swipe sideways to rotate · pinch to zoom', hy: 'Սահեցրեք կողք՝ պտտելու համար · երկու մատով՝ խոշորացնելու', ru: 'Проведите вбок, чтобы вращать · щипок — масштаб', de: 'Seitlich wischen zum Drehen · zwei Finger zum Zoomen' },
     'cfg.loading': { en: 'Loading 3D…', hy: '3D-ն բեռնվում է…', ru: 'Загрузка 3D…', de: '3D wird geladen …' },
     'cfg.noWebgl': { en: '3D preview isn’t available on this device — showing photos instead.', hy: '3D նախադիտումը հասանելի չէ այս սարքում․ ցուցադրվում են լուսանկարները։', ru: '3D-просмотр недоступен на этом устройстве — показаны фото.', de: '3D-Vorschau ist auf diesem Gerät nicht verfügbar — stattdessen Fotos.' },
     'cfg.canvas': { en: '3D preview: {piece}, {size}, {glaze}. Use the arrow keys to rotate.', hy: '3D նախադիտում՝ {piece}, {size}, {glaze}։ Պտտելու համար օգտագործեք սլաքները։', ru: '3D-просмотр: {piece}, {size}, {glaze}. Вращайте стрелками.', de: '3D-Vorschau: {piece}, {size}, {glaze}. Mit den Pfeiltasten drehen.' },
