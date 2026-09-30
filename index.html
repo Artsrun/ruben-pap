@@ -60,9 +60,9 @@
 <script type="importmap">
 { "imports": { "three": "./assets/vendor/three/three.module.js", "three/addons/": "./assets/vendor/three/addons/" } }
 </script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&amp;family=Inter:wght@300;400;500&amp;family=Noto+Sans+Armenian:wght@300;400;500&amp;family=Noto+Serif+Armenian:wght@300;400&amp;display=swap">
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/inter-latin.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/cormorant-latin.woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/fonts.css">
 <link rel="preload" as="image" type="image/webp" imagesrcset="assets/img/hero-800.webp 800w, assets/img/hero-1600.webp 1600w" imagesizes="(max-width:860px) 100vw, 52vw" fetchpriority="high">
 <link rel="stylesheet" href="assets/css/style.css">
 <script type="application/ld+json">
@@ -277,7 +277,7 @@
           <button class="cfg-tool" type="button" data-tool="full" aria-label="Full screen" title="Full screen" data-i18n-attr="aria-label:cfg.full;title:cfg.full"><svg class="ic" aria-hidden="true"><use href="#i-maximize"/></svg></button>
         </div>
         <p class="cfg-status" data-i18n="cfg.loading">Loading 3D…</p>
-        <p class="cfg-hint" data-i18n="cfg.hint">Drag to rotate · scroll or pinch to zoom</p>
+        <p class="cfg-hint"><span class="hint-fine" data-i18n="cfg.hint">Drag to rotate · scroll or pinch to zoom</span><span class="hint-touch" data-i18n="cfg.hintTouch">Swipe sideways to rotate · pinch to zoom</span></p>
       </div>
       <p class="cfg-note" data-i18n="cfg.approx">Sizes are approximate; colours are a digital preview. Every piece is thrown and fired by hand.</p>
     </div>
@@ -447,7 +447,7 @@
   </div>
   <button class="lb-nav lb-pv" type="button" aria-label="Previous image" data-i18n-attr="aria-label:lb.prev"><svg class="ic" aria-hidden="true"><use href="#i-chevron-left"/></svg></button>
   <figure class="lb-fig">
-    <img class="lb-img" alt="">
+    <div class="lb-pic"><img class="lb-img" alt=""></div>
     <figcaption class="lb-cap">
       <span class="lb-title"></span>
       <button class="lb-3d" type="button" hidden><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg><span data-i18n="cfg.view3d">View in 3D</span></button>

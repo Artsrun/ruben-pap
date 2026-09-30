@@ -11,6 +11,8 @@ It's a static site with no build step, in four languages: English, Armenian, Rus
 index.html              the page (English text lives here)
 404.html                "page not found" page (self-contained)
 assets/css/style.css    all styles (light + dark theme)
+assets/css/fonts.css    @font-face rules for the self-hosted fonts
+assets/fonts/           woff2 fonts (latin, cyrillic, armenian subsets), no Google requests
 assets/js/config.js     ← contact details: WhatsApp, Telegram, Viber, Instagram…
 assets/js/i18n.js       ← translations (EN · HY · RU · DE side by side)
 assets/js/main.js       behaviour: language + theme switch, menu, lightbox, contact buttons
@@ -20,6 +22,7 @@ assets/js/viewer3d.js   the WebGL viewer (3D shapes, glaze shader, dimensions, m
 assets/vendor/three/    three.js r186 (MIT), loaded only when the configurator is near the screen
 assets/img/             photos (.jpg originals + responsive .webp) and og-image.jpg
 tools/make-images.py    regenerates the .webp versions and og-image.jpg
+tools/fetch-fonts.py    re-downloads the fonts into assets/fonts + writes fonts.css
 favicon.svg, apple-touch-icon.png, sitemap.xml, .nojekyll
 ```
 
@@ -60,6 +63,8 @@ Visitors pick a piece, choose **S / M / L**, try five glazes and adjust glaze fl
 - **Glazes:** edit `glazes` in `pieces.js`: colours, metalness, roughness. Name each new glaze in `i18n.js` as `cfg.g.<id>`.
 - **Shapes:** each piece's `model.profile` is its silhouette as `[radius, height]` points from the foot to the rim. `ruffle` waves the rim, `holes` pierce the wall, and `section`, `bend` and `twist` make flattened forms like the folded vase.
 - **Shared designs:** the message includes a link like `?p=02&s=l&g=turquoise&f=60&t=30&l=80#customize` that reopens the exact design.
+- Picking a piece or size scrolls the 3D view back on screen if it isn't fully visible (phones especially).
+- On touch screens: swipe sideways to rotate, vertical swipes scroll the page, pinch to zoom. Photos (viewer + lightbox) zoom with a tap; drag to look around, tap again to zoom out.
 - Photos in the viewer come from each piece's `photos` list. Every work in *Selected works* has a **3D** button that jumps to its piece.
 
 ## Preview locally
@@ -76,4 +81,4 @@ Every push to `prod` then goes live within a minute or two.
 ## Credits
 Brand icons: [Simple Icons](https://simpleicons.org) (CC0). UI icons: [Lucide](https://lucide.dev) (ISC).
 3D: [three.js](https://threejs.org) r186 (MIT, minified copy in `assets/vendor/three`).
-Fonts: Cormorant Garamond, Inter, Noto Serif/Sans Armenian (Google Fonts, OFL).
+Fonts: Cormorant Garamond, Inter, Noto Serif/Sans Armenian (OFL), self-hosted from Google Fonts via `tools/fetch-fonts.py`.

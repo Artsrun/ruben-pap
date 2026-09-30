@@ -258,6 +258,46 @@
   fabBtn.addEventListener('click', () => setFab(fabPanel.hidden));
   fabPanel.addEventListener('click', e => { if (e.target.closest('a')) setFab(false); });
 
+  /* ================= tap to zoom (touch + pen) ================= */
+  // tap zooms in at the finger, one-finger drag pans, tap again zooms out
+  function tapZoom(box, img, { scale = 2.2, enabled = () => true } = {}) {
+    let on = false, ox = 50, oy = 50, start = null;
+    const place = () => { img.style.transformOrigin = `${ox}% ${oy}%`; };
+    const set = v => {
+      on = v;
+      box.classList.toggle('is-zoomed', v);
+      img.style.transform = v ? `scale(${scale})` : '';
+    };
+    box.addEventListener('pointerdown', e => {
+      start = e.pointerType !== 'mouse' && e.isPrimary && enabled() ? { x: e.clientX, y: e.clientY, ox, oy, t: e.timeStamp, moved: false } : null;
+    });
+    box.addEventListener('pointermove', e => {
+      if (!start || !on || !e.isPrimary) return;
+      const dx = e.clientX - start.x, dy = e.clientY - start.y;
+      if (Math.hypot(dx, dy) > 8) start.moved = true;
+      // moving the origin by Δ shifts the picture by −Δ·(scale−1): drag follows the finger
+      const k = 100 / (scale - 1);
+      ox = Math.min(100, Math.max(0, start.ox - dx / img.offsetWidth * k));
+      oy = Math.min(100, Math.max(0, start.oy - dy / img.offsetHeight * k));
+      place();
+    });
+    box.addEventListener('pointerup', e => {
+      if (!start || !e.isPrimary) return;
+      const tap = !start.moved && Math.hypot(e.clientX - start.x, e.clientY - start.y) < 10 && e.timeStamp - start.t < 400;
+      start = null;
+      if (!tap) return;
+      if (!on) {
+        const r = img.getBoundingClientRect();
+        ox = Math.min(100, Math.max(0, (e.clientX - r.left) / r.width * 100));
+        oy = Math.min(100, Math.max(0, (e.clientY - r.top) / r.height * 100));
+        place();
+      }
+      set(!on);
+    });
+    box.addEventListener('pointercancel', () => { start = null; });
+    return { reset: () => { if (on) set(false); }, get zoomed() { return on; } };
+  }
+
   /* ================= lightbox ================= */
   const lb = $('#lb');
   const lbImg = $('.lb-img', lb);
@@ -272,6 +312,7 @@
   let lbOpen = false;
   let lastFocus = null;
   let hideTimer = 0;
+  const lbZoom = tapZoom($('.lb-pic', lb), lbImg);
 
   function describe(btn) {
     const img = $('img', btn);
@@ -283,6 +324,7 @@
   }
   function show(i) {
     cur = (i + shots.length) % shots.length;
+    lbZoom.reset();
     const it = describe(shots[cur]);
     if (lbImg.getAttribute('src') !== it.src) {
       lbImg.classList.add('loading');
@@ -316,6 +358,7 @@
     if (!lbOpen) return;
     lbOpen = false;
     lb.classList.remove('open');
+    lbZoom.reset();
     lockScroll(false);
     setInert(false, behindLightbox());
     fabAway('lightbox', false);
@@ -336,7 +379,7 @@
   let touchX = null;
   let touchY = 0;
   lb.addEventListener('touchstart', e => {
-    touchX = e.touches.length === 1 ? e.touches[0].clientX : null;
+    touchX = e.touches.length === 1 && !lbZoom.zoomed ? e.touches[0].clientX : null;
     touchY = e.touches[0].clientY;
   }, { passive: true });
   lb.addEventListener('touchend', e => {
@@ -428,7 +471,7 @@
 
   /* small API for configurator.js */
   const RP = window.RP = {
-    t, esc, icon, toast, copy, fabAway,
+    t, esc, icon, toast, copy, fabAway, tapZoom,
     get lang() { return lang; },
     onLang: fn => langListeners.push(fn),
     channels: keys => channelList(keys).map(({ key, name, icon: ic, href }) => ({ key, name, icon: ic, href }))

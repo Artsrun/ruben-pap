@@ -53,6 +53,7 @@
   const rail = $('.cfg-rail');
   const photo = $('.cfg-photo');
   const status = $('.cfg-status');
+  const photoZoom = RP.tapZoom(view, photo, { scale: 2.2, enabled: () => view.classList.contains('is-photo') });
 
   /* ================= rendering ================= */
   function renderPieces() {
@@ -172,6 +173,7 @@
     const p = piece();
     const is3d = state.view < 0 && !no3d;
     view.classList.toggle('is-photo', !is3d);
+    photoZoom.reset();
     photo.hidden = is3d;
     if (!is3d) {
       photo.src = img(p.photos[Math.max(0, state.view)], 1000);
@@ -179,6 +181,20 @@
     }
     $$('[data-view]', rail).forEach(b => b.setAttribute('aria-pressed', String(Number(b.dataset.view) === state.view)));
     syncActive();
+  }
+
+  // bring the 3D view on screen after a click on the options (not while arrowing through them by keyboard)
+  let lastPointer = -1e9;
+  form.addEventListener('pointerdown', () => { lastPointer = performance.now(); });
+  function reveal3d() {
+    if (!no3d && state.view >= 0) { state.view = -1; showView(); }
+    if (performance.now() - lastPointer > 1500) return;
+    const top = document.querySelector('header').getBoundingClientRect().bottom;
+    const r = view.getBoundingClientRect();
+    if (r.top >= top - 1 && r.bottom <= innerHeight + 1) return;
+    const room = innerHeight - top;
+    const y = r.height > room ? r.top + r.height / 2 - top - room / 2 : r.top - top - 12;
+    scrollTo({ top: scrollY + y, behavior: reduceMotion ? 'auto' : 'smooth' });
   }
 
   function selectPiece(id) {
@@ -205,12 +221,13 @@
   form.addEventListener('submit', e => e.preventDefault());
   form.addEventListener('change', e => {
     const { name, value } = e.target;
-    if (name === 'piece') selectPiece(value);
+    if (name === 'piece') { selectPiece(value); reveal3d(); }
     else if (name === 'size') {
       state.size = value;
       renderOutputs();
       renderMessage();
       if (viewer) { viewer.setSize(piece().sizes[value]); updateLabels(); }
+      reveal3d();
     } else if (name === 'glaze') {
       state.glaze = value;
       state.glazePicked = true;
@@ -281,15 +298,15 @@
     }
   });
 
-  // magnifier on photos (mouse only)
+  // photos: magnifier follows the mouse; touch gets tap-to-zoom
   if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
     view.addEventListener('mousemove', e => {
       if (!view.classList.contains('is-photo')) return;
       const r = view.getBoundingClientRect();
       photo.style.transformOrigin = `${(e.clientX - r.left) / r.width * 100}% ${(e.clientY - r.top) / r.height * 100}%`;
-      view.classList.add('zoom');
+      view.classList.add('magnify');
     });
-    view.addEventListener('mouseleave', () => view.classList.remove('zoom'));
+    view.addEventListener('mouseleave', () => view.classList.remove('magnify'));
   }
 
   // "3D" buttons on the works + the lightbox

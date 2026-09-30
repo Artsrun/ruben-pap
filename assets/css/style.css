@@ -23,6 +23,7 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 picture{display:block;width:100%;height:100%}
 a{color:inherit;text-decoration:none}
 button{font:inherit;color:inherit}
+a,button,label,input,select,textarea{touch-action:manipulation}
 p{hyphens:auto;overflow-wrap:break-word}
 h1,h2,h3{overflow-wrap:break-word}
 :focus-visible{outline:2px solid var(--accent);outline-offset:3px}
@@ -210,7 +211,9 @@ footer{padding:clamp(70px,10vw,140px) var(--gut) 34px;border-top:1px solid var(-
 .lb-top{grid-area:top;display:flex;justify-content:space-between;align-items:center;padding:14px var(--gut)}
 .lb-x{display:inline-flex;align-items:center;gap:8px;padding:10px 4px 10px 12px;border:0;background:none;cursor:pointer;font:500 11px/1 var(--sans);letter-spacing:.2em;text-transform:uppercase}
 .lb-fig{grid-area:fig;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;min-height:0;padding-bottom:28px}
-.lb-img{width:auto;height:auto;max-width:100%;max-height:calc(100vh - 190px);max-height:calc(100dvh - 190px);object-fit:contain;transition:opacity .25s}
+.lb-pic{max-width:100%;min-height:0;overflow:hidden;touch-action:manipulation}
+.lb-pic.is-zoomed{touch-action:none;cursor:zoom-out}
+.lb-img{width:auto;height:auto;max-width:100%;max-height:calc(100vh - 190px);max-height:calc(100dvh - 190px);object-fit:contain;transition:opacity .25s,transform .25s ease}
 .lb-img.loading{opacity:.25}
 .lb-cap{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:12px 28px;text-align:center}
 .lb-title{font:italic 300 22px/1.2 var(--serif)}
@@ -243,13 +246,16 @@ html:not(.js) .to3d{display:none}
 .cfg-rail button[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
 .cfg-rail .ic{width:24px;height:24px}
 .cfg-stage{position:sticky;top:88px;min-width:0}
-.cfg-view{position:relative;width:100%;aspect-ratio:4/5;max-height:calc(100vh - 150px);overflow:hidden;background:radial-gradient(ellipse at 50% 32%,color-mix(in srgb,var(--paper) 70%,var(--paper-2)),var(--paper-2) 72%)}
+.cfg-view{position:relative;scroll-margin-top:84px;width:100%;aspect-ratio:4/5;max-height:calc(100vh - 150px);overflow:hidden;background:radial-gradient(ellipse at 50% 32%,color-mix(in srgb,var(--paper) 70%,var(--paper-2)),var(--paper-2) 72%)}
 .cfg-view:focus-visible{outline-offset:-2px}
 .cfg-view:fullscreen{max-height:none;aspect-ratio:auto}
-.cfg-canvas{position:absolute;inset:0;display:block;width:100%!important;height:100%!important;cursor:grab;touch-action:none}
+.cfg-canvas{position:absolute;inset:0;display:block;width:100%!important;height:100%!important;cursor:grab;touch-action:pan-y}
+.cfg-view:fullscreen .cfg-canvas{touch-action:none}
 .cfg-canvas:active{cursor:grabbing}
 .cfg-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transition:transform .25s ease}
-.cfg-view.zoom .cfg-photo{transform:scale(1.9);cursor:zoom-in}
+.cfg-view.magnify .cfg-photo{transform:scale(1.9);cursor:zoom-in}
+.cfg-view.is-photo{touch-action:manipulation}
+.cfg-view.is-zoomed{touch-action:none}
 .cfg-view.is-photo .cfg-canvas,.cfg-view.is-photo .cfg-dims,.cfg-view.is-photo .cfg-tools,.cfg-view.is-photo .cfg-hint{display:none}
 .cfg-dims{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .dim-line,.dim-tick{stroke:var(--ink);stroke-width:1;opacity:.6}
@@ -263,6 +269,8 @@ html:not(.js) .to3d{display:none}
 .cfg-view.is-loading .cfg-status{display:block}
 .cfg-view.no-3d .cfg-status{display:block;top:auto;bottom:14px;transform:translateX(-50%);padding:6px 12px;background:color-mix(in srgb,var(--paper) 88%,transparent);letter-spacing:.04em;text-transform:none;font-size:12px}
 .cfg-hint{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);max-width:calc(100% - 24px);padding:6px 12px;border-radius:14px;background:color-mix(in srgb,var(--paper) 80%,transparent);font-size:12px;color:var(--muted);text-align:center;pointer-events:none;transition:opacity .6s}
+.hint-touch{display:none}
+@media (pointer:coarse){.hint-touch{display:inline}.hint-fine{display:none}}
 .cfg-view.cfg-touched .cfg-hint,.cfg-view.is-loading .cfg-hint{opacity:0}
 .cfg-note{margin-top:12px;font-size:12px;color:var(--muted)}
 .cfg-panel{min-width:0}
@@ -315,6 +323,8 @@ html:not(.js) .to3d{display:none}
 .cfg-textbtn:hover{color:var(--accent)}
 .cfg-textbtn .ic{width:16px;height:16px}
 .cfg-nojs{padding:24px;border:1px dashed var(--line);color:var(--muted)}
+
+@media (pointer:coarse){.cfg-input,.cfg-qty input{font-size:16px}}
 
 /* toast */
 .toast{position:fixed;left:50%;bottom:max(24px,env(safe-area-inset-bottom));z-index:150;max-width:calc(100vw - 32px);padding:12px 18px;background:var(--ink);color:var(--paper);box-shadow:0 16px 40px -16px rgba(var(--shade),.6);font:500 13px/1.4 var(--sans);opacity:0;visibility:hidden;transform:translate(-50%,16px);transition:opacity .25s,transform .25s,visibility 0s .25s}
