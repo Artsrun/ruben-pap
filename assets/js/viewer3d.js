@@ -12,19 +12,53 @@ const MUG = { r: 4, h: 9.5, gap: 3, reach: 7.2 }; // reach = centre → tip of t
 
 /* ================= geometry ================= */
 
-// organic, petal-like rim: r = in/out wave, y = upward tips
+// hand-torn rim: r = in/out folds, y = height of the edge. `sharp` 0 = soft waves … 1 = pointed petals,
+// `irregular` makes neighbouring waves uneven.
 function rimWave(theta, rf) {
   const p = rf.seed || 0, k = rf.k;
-  const w = (Math.sin(k * theta + p) + 0.35 * Math.sin((2 * k + 1) * theta + p * 1.7) + 0.2 * Math.sin((k + 3) * theta + p * 0.3)) / 1.55;
-  return { r: w, y: Math.pow(Math.max(0, w), 1.5) * 1.6 - 0.25 };
+  const irr = rf.irregular != null ? rf.irregular : 0.35, sharp = rf.sharp != null ? rf.sharp : 1;
+  let w = (Math.sin(k * theta + p) + 0.35 * Math.sin((2 * k + 1) * theta + p * 1.7) + 0.2 * Math.sin((k + 3) * theta + p * 0.3)) / 1.55;
+  w *= 1 + irr * Math.sin(3 * theta + p * 2.3) * Math.sin(2 * theta + p);
+  const tip = Math.pow(Math.max(0, w), 1.5) * 1.6 - 0.25;
+  return { r: w, y: sharp * tip + (1 - sharp) * w * 0.6 };
 }
 
-// unit superellipse (a circle when there is no section)
-function unitSection(theta, sec) {
-  const c = Math.cos(theta), s = Math.sin(theta);
-  if (!sec) return [c, s];
-  const e = 2 / sec.n;
+// rounded-rectangle (superellipse) section, unit size
+function roundedSection(theta, n) {
+  const c = Math.cos(theta), s = Math.sin(theta), e = 2 / n;
   return [Math.sign(c) * Math.abs(c) ** e, Math.sign(s) * Math.abs(s) ** e];
+}
+
+// joins rings of `segs` points into a mesh; flips the winding if `outward(geometry)` says so
+function meshFromRings(pos, ringCount, segs, closed, outward) {
+  const quads = closed ? ringCount : ringCount - 1;
+  const idx = new (ringCount * segs > 65535 ? Uint32Array : Uint16Array)(quads * segs * 6);
+  let q = 0;
+  for (let i = 0; i < quads; i++) {
+    const i2 = (i + 1) % ringCount;
+    for (let j = 0; j < segs; j++) {
+      const a = i * segs + j, b = i * segs + (j + 1) % segs, c = i2 * segs + j, d = i2 * segs + (j + 1) % segs;
+      idx[q++] = a; idx[q++] = c; idx[q++] = b;
+      idx[q++] = b; idx[q++] = c; idx[q++] = d;
+    }
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  g.setIndex(new THREE.BufferAttribute(idx, 1));
+  g.computeVertexNormals();
+  if (outward && !outward(g)) {
+    for (let i = 0; i < idx.length; i += 3) { const tmp = idx[i + 1]; idx[i + 1] = idx[i + 2]; idx[i + 2] = tmp; }
+    g.index.needsUpdate = true;
+    g.computeVertexNormals();
+  }
+  return g;
+}
+
+function finish(g, H) {
+  g.computeBoundingBox();
+  const b = g.boundingBox;
+  g.userData.dims = { h: b.max.y - b.min.y, w: b.max.x - b.min.x, d: b.max.z - b.min.z, H: H || b.max.y - b.min.y };
+  return g;
 }
 
 /* Lathes the outer profile into a thick-walled vessel: outside wall → rounded lip → inside wall. */
@@ -41,48 +75,136 @@ export function buildVessel(m) {
   const lip = [];
   for (let k = 1; k < 8; k++) {
     const a = Math.PI * k / 8;
-    lip.push([C.x + half.x * Math.cos(a) + up.x * Math.sin(a), C.y + half.y * Math.cos(a) + up.y * Math.sin(a), k / 8]);
+    lip.push([C.x + half.x * Math.cos(a) + up.x * Math.sin(a), C.y + half.y * Math.cos(a) + up.y * Math.sin(a)]);
   }
-  // [radius, height, 0 = outside … 1 = inside]
-  const prof = [...outer.map(p => [p.x, Math.max(0, p.y), 0]), ...lip, ...inner.reverse().map(p => [p.x, p.y, 1])];
+  const prof = [...outer.map(p => [p.x, Math.max(0, p.y)]), ...lip, ...inner.reverse().map(p => [p.x, p.y])];
   const H = Math.max(...prof.map(p => p[1]));
-
-  const P = prof.length, S = segs, rf = m.ruffle, sec = m.section, bend = m.bend, twist = m.twist || 0;
-  const aspect = sec ? sec.aspect : 1;
-  const pos = new Float32Array(P * S * 3);
+  const rf = m.ruffle;
+  const pos = new Float32Array(prof.length * segs * 3);
   let v = 0;
-  for (const [r0, y0, inn] of prof) {
-    const hn = y0 / H, tr = rf ? smooth(rf.start, 1, hn) : 0;
-    for (let j = 0; j < S; j++) {
-      const th = j / S * TAU;
+  for (const [r0, y0] of prof) {
+    const tr = rf ? smooth(rf.start, 1, y0 / H) : 0;
+    for (let j = 0; j < segs; j++) {
+      const th = j / segs * TAU;
       let r = r0, y = y0;
       if (tr > 0) { const w = rimWave(th, rf); r += rf.amp * tr * w.r; y += rf.ampY * tr * tr * w.y; }
-      const [ux, uz] = unitSection(th + twist * hn, sec);
-      const x = r * ux;
-      // flattened sections keep the wall thickness on the short axis too
-      let z = (r * aspect - inn * t * (1 - aspect)) * uz;
-      if (bend && y < bend.y0) { const k = 1 - y / bend.y0; z += bend.amount * k * k; }
-      pos[v++] = x; pos[v++] = y; pos[v++] = z;
+      pos[v++] = r * Math.cos(th); pos[v++] = y; pos[v++] = r * Math.sin(th);
     }
   }
-  const idx = new (P * S > 65535 ? Uint32Array : Uint16Array)((P - 1) * S * 6);
-  let q = 0;
-  for (let i = 0; i < P - 1; i++) {
+  return finish(meshFromRings(pos, prof.length, segs, false), H);
+}
+
+/* Folded vase: a flattened slab tube standing upright whose base folds over and runs along the
+ * table as a squashed, crumpled foot — an "L". A rounded-rectangle section is swept along that
+ * path; its in-plane half-widths follow the L silhouette (square outer corner, creased inner one)
+ * and the clay that bunches up inside the fold is pleated. */
+export function buildFolded(m) {
+  const f = m.fold, t = m.thick || 0.45, H = m.height, S = 80, yaw = f.yaw || 0;
+  const [colW, colD] = f.col, [footW, footD] = f.foot, [endW, endD] = f.end;
+  const rb = f.rb, Lf = f.length, curl = f.curl || 0, fillet = f.fillet || 1.2, CURL = 3.5;
+  const yF = footW, cx = -rb, cy = yF + rb;                 // foot centre-line height, bend centre
+  const Lb = Math.PI / 2 * rb, L = Lf + Lb + (H - cy);
+
+  const frameAt = u => {
+    if (u < Lf) {                                           // foot, lifting a little at its end
+      const k = Math.max(0, CURL - u) / CURL, dy = -2 * curl * k / CURL, len = Math.hypot(1, dy);
+      return { c: [cx - Lf + u, yF + curl * k * k], tg: [1 / len, dy / len] };
+    }
+    if (u < Lf + Lb) {                                      // the fold
+      const a = -Math.PI / 2 + (u - Lf) / rb;
+      return { c: [cx + rb * Math.cos(a), cy + rb * Math.sin(a)], tg: [-Math.sin(a), Math.cos(a)] };
+    }
+    return { c: [0, cy + u - Lf - Lb], tg: [0, 1] };        // upright column
+  };
+  // distance from c along d to the outer L boundary: right face x = colW, table y = 0, rounded corner
+  const toOuter = (c, d) => {
+    const s1 = d[0] > 1e-6 ? (colW - c[0]) / d[0] : Infinity;
+    const s2 = d[1] < -1e-6 ? -c[1] / d[1] : Infinity;
+    let s = Math.min(s1, s2);
+    const px = c[0] + d[0] * s, py = c[1] + d[1] * s;
+    if (px > colW - fillet && py < fillet) {
+      const ox = c[0] - (colW - fillet), oy = c[1] - fillet, b = ox * d[0] + oy * d[1];
+      s = -b + Math.sqrt(Math.max(0, b * b - (ox * ox + oy * oy - fillet * fillet)));
+    }
+    return s;
+  };
+  // in-plane half widths [inside of the fold, outside of the fold]
+  const halfWidths = (u, c, nrm) => {
+    if (u <= Lf) { const w = footW + (endW - footW) * smooth(2.5, 0, u); return [w, w]; }
+    if (u >= Lf + Lb) return [colW, colW];
+    const sx = nrm[0] < -1e-6 ? (-colW - c[0]) / nrm[0] : Infinity;   // column's inner face
+    const sy = nrm[1] > 1e-6 ? (2 * footW - c[1]) / nrm[1] : Infinity; // top of the foot
+    return [Math.max(0.4, Math.min(sx, sy)), toOuter(c, [-nrm[0], -nrm[1]])];
+  };
+  const depthAt = u => (u <= Lf ? endD + (footD - endD) * smooth(0, 2.5, u) : footD + (colD - footD) * smooth(Lf, Lf + Lb + 4, u));
+
+  const ring = (u, inner) => {
+    const { c, tg } = frameAt(u);
+    const nrm = [-tg[1], tg[0]];                           // points to the inside of the fold
+    let [wIn, wOut] = halfWidths(u, c, nrm);
+    let hd = depthAt(u);
+    const top = smooth(L - 4, L, u);                        // the mouth flares slightly
+    wIn += 0.2 * top; wOut += 0.2 * top; hd += 0.15 * top;
+    if (inner) { wIn = Math.max(0.15, wIn - t); wOut = Math.max(0.15, wOut - t); hd = Math.max(0.12, hd - t); }
+    const fold = smooth(Lf - 3, Lf, u) * (1 - smooth(Lf + Lb, Lf + Lb + 5, u));
+    const foot = 1 - smooth(Lf - 1, Lf + 1, u);
+    const n = (f.nFoot || 2.8) + ((f.n || 4) - (f.nFoot || 2.8)) * smooth(Lf - 1, Lf + Lb + 3, u); // rounder foot, squarer column
+    const turn = yaw * (1 - smooth(Lf - 5, Lf + 1, u));  // the foot swings towards the viewer
+    const out = [];
     for (let j = 0; j < S; j++) {
-      const a = i * S + j, b = i * S + (j + 1) % S, c = a + S, d = b + S;
-      idx[q++] = a; idx[q++] = c; idx[q++] = b;
-      idx[q++] = b; idx[q++] = c; idx[q++] = d;
+      const th = j / S * TAU;
+      const [ux, uz] = roundedSection(th, n);
+      const inSide = Math.max(0, ux);
+      let d = ux > 0 ? wIn * ux : wOut * ux;
+      let z = hd * uz;
+      // one or two soft creases where the clay bunched up inside the fold, a gentle wave along the foot
+      z *= 1 + fold * inSide * 0.2 * Math.sin(u * 1.5 + 1.7) + foot * 0.07 * Math.sin(u * 0.9 + th * 2);
+      d += fold * inSide * 0.3 * Math.sin(u * 1.7 + 0.6) + foot * 0.12 * Math.sin(u * 1.1 + th);
+      if (f.crease) {                                     // a strong diagonal valley fold across the foot's top
+        const [cu, slope, depth, width] = f.crease, dist = (u - cu) - slope * uz;
+        d -= inSide * foot * depth * (Math.exp(-dist * dist / width) - 0.45 * Math.exp(-((dist - 1.2) ** 2) / width));
+      }
+      let x = c[0] + nrm[0] * d;
+      let y = c[1] + nrm[1] * d;
+      if (u > L - 1.5) y += (f.topWave || 0) * Math.sin(2 * th + 0.9) * smooth(L - 1.5, L, u);
+      x += 0.12 * Math.sin(y * 0.3);                       // hand-built, not machine-straight
+      if (turn) { const dx = x - cx, c2 = Math.cos(turn), s2 = Math.sin(turn); x = cx + dx * c2 - z * s2; z = dx * s2 + z * c2; }
+      out.push([x, y, z]);
     }
-  }
-  const g = new THREE.BufferGeometry();
-  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-  g.setIndex(new THREE.BufferAttribute(idx, 1));
-  if (bend) { g.computeBoundingBox(); g.translate(0, 0, -(g.boundingBox.max.z + g.boundingBox.min.z) / 2); }
-  g.computeVertexNormals();
+    return out;
+  };
+  const lip = (from, to, dir) => {                          // rounded edge between two rings
+    const rings = [];
+    for (let k = 1; k < 8; k++) {
+      const a = Math.PI * k / 8;
+      rings.push(from.map((p, j) => {
+        const q = to[j], c = [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2, (p[2] + q[2]) / 2];
+        const h = Math.hypot(p[0] - c[0], p[1] - c[1], p[2] - c[2]);
+        return [0, 1, 2].map(i => c[i] + (p[i] - c[i]) * Math.cos(a) + dir[i] * h * Math.sin(a));
+      }));
+    }
+    return rings;
+  };
+
+  const R = 170, us = Array.from({ length: R + 1 }, (_, i) => i / R * L);
+  const outer = us.map(u => ring(u, false)), inner = us.map(u => ring(u, true));
+  const t0 = frameAt(0).tg, ty = Math.cos(yaw), tz = Math.sin(yaw);
+  const rings = [
+    ...outer,                                              // foot end → top, outside
+    ...lip(outer[R], inner[R], [0, 1, 0]),                 // rim of the mouth
+    ...inner.slice().reverse(),                            // top → foot end, inside
+    ...lip(inner[0], outer[0], [-t0[0] * ty, -t0[1], -t0[0] * tz]) // lip of the foot's open end
+  ];
+  const pos = new Float32Array(rings.length * S * 3);
+  let v = 0;
+  for (const r of rings) for (const p of r) { pos[v++] = p[0]; pos[v++] = p[1]; pos[v++] = p[2]; }
+  // on the column's inside face (θ = 0) the outer normal must point to −x
+  const probe = Math.round(R * (Lf + Lb + (H - cy) / 2) / L) * S;
+  const g = meshFromRings(pos, rings.length, S, true, geo => geo.attributes.normal.getX(probe) < 0);
   g.computeBoundingBox();
   const b = g.boundingBox;
-  g.userData.dims = { h: b.max.y - b.min.y, w: b.max.x - b.min.x, d: b.max.z - b.min.z, H };
-  return g;
+  g.translate(-(b.max.x + b.min.x) / 2, -b.min.y, -(b.max.z + b.min.z) / 2);
+  return finish(g);
 }
 
 /* ================= glaze shader ================= */
@@ -413,7 +535,7 @@ export function createViewer(host, { onReady } = {}) {
   return {
     setPiece(id, model, seed, wanted) {
       let geo = cache.get(id);
-      if (!geo) { geo = buildVessel(model); cache.set(id, geo); }
+      if (!geo) { geo = model.fold ? buildFolded(model) : buildVessel(model); cache.set(id, geo); }
       piece.geometry = geo;
       dims = geo.userData.dims;
       U.uHeight.value = dims.H;
