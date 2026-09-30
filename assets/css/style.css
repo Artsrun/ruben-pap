@@ -340,9 +340,11 @@ html:not(.js) .to3d{display:none}
   .logo,.tools{position:relative;z-index:60}
 }
 @media (max-width:860px){
-  .hero{grid-template-columns:1fr}
-  .hero-img{height:72vh;height:72svh}
-  .hero-txt{padding:40px var(--gut) 70px}
+  .hero{grid-template-columns:1fr;min-height:0}
+  .hero-txt{order:-1;padding:clamp(96px,13vh,128px) var(--gut) 36px}
+  .hero-img{height:auto;aspect-ratio:1;max-height:72vh;max-height:72svh}
+  .hero-img img{object-position:50% 62%}
+  .hero-img::after{display:none}
   .works{grid-template-columns:1fr 1fr;row-gap:36px}
   .works>*{grid-column:auto!important;margin-top:0!important}
   .works>.c8{grid-column:1/-1!important}
